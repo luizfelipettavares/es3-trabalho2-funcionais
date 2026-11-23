@@ -1,0 +1,13 @@
+# Observação O1 – 2026-11-17T17:34:39-03:00
+$ POST /api/reset
+{"mensagem": "Dados de inscrições restaurados"}
+$ POST /api/inscricoes {nome: Aluno um, curso: 1}
+{"id": 1, "nome": "Aluno um", "email": "um@ads.local", "curso": 1}
+$ POST /api/inscricoes {nome: Aluno dois, curso: 1}
+{"id": 2, "nome": "Aluno dois", "email": "dois@ads.local", "curso": 1}
+$ POST /api/inscricoes (terceiro, curso 1)
+{"erro": "Curso sem vagas"}
+$ GET /api/cursos/1
+{"id": 1, "nome": "Python", "vagas": 2}
+$ GET /api/cursos
+{"total": 3, "itens": [{"id": 1, "nome": "Python", "vagas": 2}, {"id": 2, "nome": "Java", "vagas": 2}, {"id": 3, "nome": "Testes de Software", "vagas": 2}]}

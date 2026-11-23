@@ -1,0 +1,105 @@
+diff --git a/src/App.tsx b/src/App.tsx
+index b16a606..7300c36 100644
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -32,7 +32,7 @@ export default function App() {
+       </header>
+ 
+       {loading ? (
+-        <p className={styles.status}>Carregando produtos…</p>
++        <p className={styles.status} data-testid="carregando">Carregando produtos…</p>
+       ) : (
+         <FilterableProductTable products={products} />
+       )}
+@@ -40,7 +40,7 @@ export default function App() {
+       <footer className={styles.footer}>
+         Exemplo “Thinking in React” com Vite, TypeScript e CSS Modules.
+         {source && (
+-          <span className={styles.source}>
++          <span className={styles.source} data-testid="fonte-dados">
+             {source === 'api' ? ' Dados da API REST.' : ' Dados locais.'}
+           </span>
+         )}
+diff --git a/src/components/ProductCategoryRow/ProductCategoryRow.tsx b/src/components/ProductCategoryRow/ProductCategoryRow.tsx
+index cc30163..ec43fd4 100644
+--- a/src/components/ProductCategoryRow/ProductCategoryRow.tsx
++++ b/src/components/ProductCategoryRow/ProductCategoryRow.tsx
+@@ -9,7 +9,7 @@ interface ProductCategoryRowProps {
+ export default function ProductCategoryRow({ category }: ProductCategoryRowProps) {
+   return (
+     <tr>
+-      <th colSpan={2} scope="colgroup" className={styles.category}>
++      <th colSpan={2} scope="colgroup" className={styles.category} data-testid="linha-categoria">
+         {category}
+       </th>
+     </tr>
+diff --git a/src/components/ProductRow/ProductRow.tsx b/src/components/ProductRow/ProductRow.tsx
+index 53bd343..a1aef85 100644
+--- a/src/components/ProductRow/ProductRow.tsx
++++ b/src/components/ProductRow/ProductRow.tsx
+@@ -9,18 +9,18 @@ interface ProductRowProps {
+ /** Uma linha por produto; nome em vermelho quando está em falta. */
+ export default function ProductRow({ product }: ProductRowProps) {
+   return (
+-    <tr className={styles.row}>
+-      <td className={styles.name}>
++    <tr className={styles.row} data-testid="linha-produto" data-stocked={product.stocked}>
++      <td className={styles.name} data-testid="nome-produto">
+         {product.stocked ? (
+           product.name
+         ) : (
+           <span className={styles.outOfStock}>
+             {product.name}
+-            <span className={styles.badge}>em falta</span>
++            <span className={styles.badge} data-testid="selo-em-falta">em falta</span>
+           </span>
+         )}
+       </td>
+-      <td className={styles.price}>{formatPrice(product.price)}</td>
++      <td className={styles.price} data-testid="preco-produto">{formatPrice(product.price)}</td>
+     </tr>
+   );
+ }
+diff --git a/src/components/ProductTable/ProductTable.tsx b/src/components/ProductTable/ProductTable.tsx
+index eb40f05..db9015e 100644
+--- a/src/components/ProductTable/ProductTable.tsx
++++ b/src/components/ProductTable/ProductTable.tsx
+@@ -32,7 +32,7 @@ export default function ProductTable({ products, filterText, inStockOnly }: Prod
+ 
+   return (
+     <div className={styles.scroll}>
+-      <table className={styles.table}>
++      <table className={styles.table} data-testid="tabela-produtos">
+         <thead>
+           <tr>
+             <th scope="col">Nome</th>
+@@ -46,7 +46,7 @@ export default function ProductTable({ products, filterText, inStockOnly }: Prod
+             rows
+           ) : (
+             <tr>
+-              <td colSpan={2} className={styles.empty}>
++              <td colSpan={2} className={styles.empty} data-testid="mensagem-vazia">
+                 Nenhum produto encontrado. Tente outro nome ou desmarque o filtro de estoque.
+               </td>
+             </tr>
+diff --git a/src/components/SearchBar/SearchBar.tsx b/src/components/SearchBar/SearchBar.tsx
+index 8f3d2dd..3d1cb4b 100644
+--- a/src/components/SearchBar/SearchBar.tsx
++++ b/src/components/SearchBar/SearchBar.tsx
+@@ -26,6 +26,7 @@ export default function SearchBar({
+       </label>
+       <input
+         id="search"
++        data-testid="campo-busca"
+         className={styles.input}
+         type="search"
+         value={filterText}
+@@ -35,6 +36,8 @@ export default function SearchBar({
+       />
+       <label className={styles.check}>
+         <input
++          id="in-stock"
++          data-testid="filtro-estoque"
+           type="checkbox"
+           checked={inStockOnly}
+           onChange={(e: ChangeEvent<HTMLInputElement>) => onInStockOnlyChange(e.target.checked)}

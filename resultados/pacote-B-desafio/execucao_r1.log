@@ -1,0 +1,30 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+metadata: {'Python': '3.13.18', 'Platform': 'Linux-6.18.44-fc-v553-x86_64-with-glibc2.39', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.6.0'}, 'Plugins': {'platformdirs': '4.13.5', 'anyio': '4.15.1', 'metadata': '3.1.1', 'html': '4.2.0', 'locust': '2.47.0'}, 'CI': '1', 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: /home/claude/entrega/trabalho2-funcionais/pacote-B/desafio
+plugins: platformdirs-4.13.5, anyio-4.15.1, metadata-3.1.1, html-4.2.0, locust-2.47.0
+collecting ... collected 19 items
+
+test_inscricoes.py::test_ct01_inscricao_valida PASSED                    [  5%]
+test_inscricoes.py::test_ct02_mesmo_email_em_outro_curso_e_aceito PASSED [ 10%]
+test_inscricoes.py::test_ct03_nome_vazio_rejeitado[vazio] PASSED         [ 15%]
+test_inscricoes.py::test_ct03_nome_vazio_rejeitado[so_espacos] PASSED    [ 21%]
+test_inscricoes.py::test_ct04_email_invalido_rejeitado[sem_arroba] PASSED [ 26%]
+test_inscricoes.py::test_ct04_email_invalido_rejeitado[sem_usuario] PASSED [ 31%]
+test_inscricoes.py::test_ct04_email_invalido_rejeitado[dominio_sem_ponto] PASSED [ 36%]
+test_inscricoes.py::test_ct04_email_invalido_rejeitado[com_espaco] PASSED [ 42%]
+test_inscricoes.py::test_ct04_email_invalido_rejeitado[vazio] PASSED     [ 47%]
+test_inscricoes.py::test_ct05_curso_ausente_rejeitado PASSED             [ 52%]
+test_inscricoes.py::test_ct06_a_ct09_limites_do_nome[nome_2_rejeita] PASSED [ 57%]
+test_inscricoes.py::test_ct06_a_ct09_limites_do_nome[nome_3_aceita] PASSED [ 63%]
+test_inscricoes.py::test_ct06_a_ct09_limites_do_nome[nome_60_aceita] PASSED [ 68%]
+test_inscricoes.py::test_ct06_a_ct09_limites_do_nome[nome_61_rejeita] PASSED [ 73%]
+test_inscricoes.py::test_ct06b_espacos_nas_pontas_nao_contam PASSED      [ 78%]
+test_inscricoes.py::test_ct06c_nome_curto_com_espacos_rejeitado PASSED   [ 84%]
+test_inscricoes.py::test_ct10_duplicidade_ignora_maiusculas_e_espacos PASSED [ 89%]
+test_inscricoes.py::test_ct11_terceira_inscricao_no_curso_lotado PASSED  [ 94%]
+test_inscricoes.py::test_ct12_cancelamento_libera_vaga PASSED            [100%]
+
+- generated xml file: /home/claude/entrega/trabalho2-funcionais/resultados/pacote-B-desafio/execucao_r1.xml -
+- Generated html report: file:///home/claude/entrega/trabalho2-funcionais/resultados/pacote-B-desafio/execucao_r1.html -
+============================= 19 passed in 42.38s ==============================

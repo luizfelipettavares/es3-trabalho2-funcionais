@@ -1,0 +1,343 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+metadata: {'Python': '3.13.18', 'Platform': 'Linux-6.18.44-fc-v553-x86_64-with-glibc2.39', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.6.0'}, 'Plugins': {'platformdirs': '4.13.5', 'anyio': '4.15.1', 'metadata': '3.1.1', 'html': '4.2.0', 'locust': '2.47.0'}, 'CI': '1', 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: /home/claude/entrega/trabalho2-funcionais/pacote-B/exemplo
+plugins: platformdirs-4.13.5, anyio-4.15.1, metadata-3.1.1, html-4.2.0, locust-2.47.0
+collecting ... collected 2 items
+
+test_login.py::test_login_valido ERROR                                   [ 50%]
+test_login.py::test_login_invalido ERROR                                 [100%]
+
+==================================== ERRORS ====================================
+_____________________ ERROR at setup of test_login_valido ______________________
+
+    @pytest.fixture
+    def driver():
+        options = webdriver.ChromeOptions()
+        if os.environ.get('HEADLESS') == '1': options.add_argument('--headless=new')
+        options.add_argument('--window-size=1280,900')
+        if os.environ.get('CHROME_BINARY'): options.binary_location=os.environ['CHROME_BINARY']
+        service = Service(os.environ['CHROMEDRIVER']) if os.environ.get('CHROMEDRIVER') else Service()
+>       browser = webdriver.Chrome(options=options, service=service)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conftest.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/chrome/webdriver.py:45: in __init__
+    super().__init__(
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/chromium/webdriver.py:66: in __init__
+    super().__init__(command_executor=executor, options=self.options)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/common/webdriver.py:25: in __init__
+    super().__init__(*args, **kwargs)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:358: in __init__
+    self.start_session(capabilities)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:464: in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:569: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f809037b230>
+response = {'status': 500, 'value': '{"value":{"error":"session not created","message":"session not created: Chrome instance exit...\\n#15 0x55f517904353 \\u003Cunknown>\\n#16 0x7f3d92c9cb84 \\u003Cunknown>\\n#17 0x7f3d92d29ecc \\u003Cunknown>\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -> None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "<anonymous>")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "<anonymous>")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+>       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome instance exited. Examine ChromeDriver verbose log to determine the cause.; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+E       Stacktrace:
+E       #0 0x55f5179059fa <unknown>
+E       #1 0x55f51723b5b9 <unknown>
+E       #2 0x55f51727ab2e <unknown>
+E       #3 0x55f51727641f <unknown>
+E       #4 0x55f5172c6a06 <unknown>
+E       #5 0x55f5172c60bc <unknown>
+E       #6 0x55f517284b8b <unknown>
+E       #7 0x55f517285971 <unknown>
+E       #8 0x55f5178c8667 <unknown>
+E       #9 0x55f5178c6e95 <unknown>
+E       #10 0x55f5178b1f55 <unknown>
+E       #11 0x55f5178c7aea <unknown>
+E       #12 0x55f51789a6c9 <unknown>
+E       #13 0x55f5178ef9a8 <unknown>
+E       #14 0x55f5178efb45 <unknown>
+E       #15 0x55f517904353 <unknown>
+E       #16 0x7f3d92c9cb84 <unknown>
+E       #17 0x7f3d92d29ecc <unknown>
+
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py:234: SessionNotCreatedException
+____________________ ERROR at setup of test_login_invalido _____________________
+
+    @pytest.fixture
+    def driver():
+        options = webdriver.ChromeOptions()
+        if os.environ.get('HEADLESS') == '1': options.add_argument('--headless=new')
+        options.add_argument('--window-size=1280,900')
+        if os.environ.get('CHROME_BINARY'): options.binary_location=os.environ['CHROME_BINARY']
+        service = Service(os.environ['CHROMEDRIVER']) if os.environ.get('CHROMEDRIVER') else Service()
+>       browser = webdriver.Chrome(options=options, service=service)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+conftest.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/chrome/webdriver.py:45: in __init__
+    super().__init__(
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/chromium/webdriver.py:66: in __init__
+    super().__init__(command_executor=executor, options=self.options)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/common/webdriver.py:25: in __init__
+    super().__init__(*args, **kwargs)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:358: in __init__
+    self.start_session(capabilities)
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:464: in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:569: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7f80902fcf50>
+response = {'status': 500, 'value': '{"value":{"error":"session not created","message":"session not created: Chrome instance exit...\\n#15 0x557278ce8353 \\u003Cunknown>\\n#16 0x7f556109cb84 \\u003Cunknown>\\n#17 0x7f5561129ecc \\u003Cunknown>\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -> None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "<anonymous>")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "<anonymous>")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+>       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome instance exited. Examine ChromeDriver verbose log to determine the cause.; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+E       Stacktrace:
+E       #0 0x557278ce99fa <unknown>
+E       #1 0x55727861f5b9 <unknown>
+E       #2 0x55727865eb2e <unknown>
+E       #3 0x55727865a41f <unknown>
+E       #4 0x5572786aaa06 <unknown>
+E       #5 0x5572786aa0bc <unknown>
+E       #6 0x557278668b8b <unknown>
+E       #7 0x557278669971 <unknown>
+E       #8 0x557278cac667 <unknown>
+E       #9 0x557278caae95 <unknown>
+E       #10 0x557278c95f55 <unknown>
+E       #11 0x557278cabaea <unknown>
+E       #12 0x557278c7e6c9 <unknown>
+E       #13 0x557278cd39a8 <unknown>
+E       #14 0x557278cd3b45 <unknown>
+E       #15 0x557278ce8353 <unknown>
+E       #16 0x7f556109cb84 <unknown>
+E       #17 0x7f5561129ecc <unknown>
+
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py:234: SessionNotCreatedException
+- generated xml file: /home/claude/entrega/trabalho2-funcionais/resultados/pacote-B-exemplo/execucao_r3.xml -
+- Generated html report: file:///home/claude/entrega/trabalho2-funcionais/resultados/pacote-B-exemplo/execucao_r3.html -
+=========================== short test summary info ============================
+ERROR test_login.py::test_login_valido - selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome instance exited. Examine ChromeDriver verbose log to determine the cause.; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+#0 0x55f5179059fa <unknown>
+#1 0x55f51723b5b9 <unknown>
+#2 0x55f51727ab2e <unknown>
+#3 0x55f51727641f <unknown>
+#4 0x55f5172c6a06 <unknown>
+#5 0x55f5172c60bc <unknown>
+#6 0x55f517284b8b <unknown>
+#7 0x55f517285971 <unknown>
+#8 0x55f5178c8667 <unknown>
+#9 0x55f5178c6e95 <unknown>
+#10 0x55f5178b1f55 <unknown>
+#11 0x55f5178c7aea <unknown>
+#12 0x55f51789a6c9 <unknown>
+#13 0x55f5178ef9a8 <unknown>
+#14 0x55f5178efb45 <unknown>
+#15 0x55f517904353 <unknown>
+#16 0x7f3d92c9cb84 <unknown>
+#17 0x7f3d92d29ecc <unknown>
+ERROR test_login.py::test_login_invalido - selenium.common.exceptions.SessionNotCreatedException: Message: session not created: Chrome instance exited. Examine ChromeDriver verbose log to determine the cause.; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+#0 0x557278ce99fa <unknown>
+#1 0x55727861f5b9 <unknown>
+#2 0x55727865eb2e <unknown>
+#3 0x55727865a41f <unknown>
+#4 0x5572786aaa06 <unknown>
+#5 0x5572786aa0bc <unknown>
+#6 0x557278668b8b <unknown>
+#7 0x557278669971 <unknown>
+#8 0x557278cac667 <unknown>
+#9 0x557278caae95 <unknown>
+#10 0x557278c95f55 <unknown>
+#11 0x557278cabaea <unknown>
+#12 0x557278c7e6c9 <unknown>
+#13 0x557278cd39a8 <unknown>
+#14 0x557278cd3b45 <unknown>
+#15 0x557278ce8353 <unknown>
+#16 0x7f556109cb84 <unknown>
+#17 0x7f5561129ecc <unknown>
+============================== 2 errors in 0.57s ===============================

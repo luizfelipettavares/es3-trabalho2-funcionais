@@ -1,0 +1,213 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+metadata: {'Python': '3.13.18', 'Platform': 'Linux-6.18.44-fc-v553-x86_64-with-glibc2.39', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.6.0'}, 'Plugins': {'platformdirs': '4.13.5', 'anyio': '4.15.1', 'metadata': '3.1.1', 'html': '4.2.0', 'locust': '2.47.0'}, 'CI': '1', 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: /home/claude/entrega/trabalho2-funcionais/pacote-A/desafio
+plugins: platformdirs-4.13.5, anyio-4.15.1, metadata-3.1.1, html-4.2.0, locust-2.47.0
+collecting ... collected 14 items
+
+test_matricula.py::test_ct01_login_valido_abre_oferta PASSED             [  7%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[senha_errada] PASSED [ 14%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[matricula_inexistente] PASSED [ 21%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[campos_vazios] PASSED [ 28%]
+test_matricula.py::test_ct03_oferta_sem_login_redireciona PASSED         [ 35%]
+test_matricula.py::test_ct04_ct05_quantidade_valida_matricula[limite_1] PASSED [ 42%]
+test_matricula.py::test_ct04_ct05_quantidade_valida_matricula[limite_5] PASSED [ 50%]
+test_matricula.py::test_ct06_ct07_quantidade_invalida_rejeitada[limite_0] PASSED [ 57%]
+test_matricula.py::test_ct06_ct07_quantidade_invalida_rejeitada[limite_6] PASSED [ 64%]
+test_matricula.py::test_ct08_choque_de_horario_rejeitado PASSED          [ 71%]
+test_matricula.py::test_ct09_disciplina_sem_vagas_rejeitada FAILED       [ 78%]
+test_matricula.py::test_ct10_segunda_matricula_do_aluno_rejeitada PASSED [ 85%]
+test_matricula.py::test_ct11_sucesso_gera_comprovante_e_desconta_vagas PASSED [ 92%]
+test_matricula.py::test_ct12_ultima_vaga_pode_ser_ocupada PASSED         [100%]
+
+=================================== FAILURES ===================================
+___________________ test_ct09_disciplina_sem_vagas_rejeitada ___________________
+
+driver = <selenium.webdriver.chrome.webdriver.WebDriver (session="a7d062cdd620210181db3ac5110ce9cc")>
+base_url = 'http://localhost:5000'
+
+    def test_ct09_disciplina_sem_vagas_rejeitada(driver, base_url):
+        for n in range(2, 7):                                         # 5 outros alunos ocupam MOB
+            matricular_pela_api(base_url, f"2026{n:04d}", ["MOB"])
+>       LoginMatriculaPage(driver, base_url).abrir().entrar(ALUNO, SENHA)
+
+test_matricula.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+pages/matricula_pages.py:38: in entrar
+    self.wait.until(EC.staleness_of(botao))
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:112: in until
+    value = method(self._driver)
+            ^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/support/expected_conditions.py:546: in _predicate
+    element.is_enabled()
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py:238: in is_enabled
+    return self._execute(Command.IS_ELEMENT_ENABLED)["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py:532: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:569: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7ff346c2dd60>
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"unknown error: unhandled inspector error: {\\"c...\\n#24 0x55f1224ff353 \\u003Cunknown>\\n#25 0x7f422409cb84 \\u003Cunknown>\\n#26 0x7f4224129ecc \\u003Cunknown>\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -> None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "<anonymous>")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "<anonymous>")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+>       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: unknown error: unhandled inspector error: {"code":-32000,"message":"Node with given id does not belong to the document"}
+E         (Session info: chrome=153.0.8010.12)
+E       Stacktrace:
+E       #0 0x55f1225009fa <unknown>
+E       #1 0x55f121e365b9 <unknown>
+E       #2 0x55f121e1d355 <unknown>
+E       #3 0x55f121e1b80b <unknown>
+E       #4 0x55f121e1c1ef <unknown>
+E       #5 0x55f121e48e8e <unknown>
+E       #6 0x55f121e4b6ee <unknown>
+E       #7 0x55f121e4a061 <unknown>
+E       #8 0x55f121e3e259 <unknown>
+E       #9 0x55f121e3c419 <unknown>
+E       #10 0x55f121e4007b <unknown>
+E       #11 0x55f121e40123 <unknown>
+E       #12 0x55f121e89049 <unknown>
+E       #13 0x55f121e813e7 <unknown>
+E       #14 0x55f121ed68de <unknown>
+E       #15 0x55f121e7fb8b <unknown>
+E       #16 0x55f121e80971 <unknown>
+E       #17 0x55f1224c3667 <unknown>
+E       #18 0x55f1224c1e95 <unknown>
+E       #19 0x55f1224acf55 <unknown>
+E       #20 0x55f1224c2aea <unknown>
+E       #21 0x55f1224956c9 <unknown>
+E       #22 0x55f1224ea9a8 <unknown>
+E       #23 0x55f1224eab45 <unknown>
+E       #24 0x55f1224ff353 <unknown>
+E       #25 0x7f422409cb84 <unknown>
+E       #26 0x7f4224129ecc <unknown>
+
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py:234: WebDriverException
+------------------------------ Captured log setup ------------------------------
+WARNING  selenium.webdriver.common.selenium_manager:selenium_manager.py:168 Exception managing chrome: error sending request for url (https://googlechromelabs.github.io/chrome-for-testing/known-good-versions-with-downloads.json): client error (Connect): tunnel error: unsuccessful
+- generated xml file: /home/claude/entrega/trabalho2-funcionais/resultados/pacote-A-desafio/execucao_r3.xml -
+- Generated html report: file:///home/claude/entrega/trabalho2-funcionais/resultados/pacote-A-desafio/execucao_r3.html -
+=========================== short test summary info ============================
+FAILED test_matricula.py::test_ct09_disciplina_sem_vagas_rejeitada - selenium.common.exceptions.WebDriverException: Message: unknown error: unhandled inspector error: {"code":-32000,"message":"Node with given id does not belong to the document"}
+  (Session info: chrome=153.0.8010.12)
+Stacktrace:
+#0 0x55f1225009fa <unknown>
+#1 0x55f121e365b9 <unknown>
+#2 0x55f121e1d355 <unknown>
+#3 0x55f121e1b80b <unknown>
+#4 0x55f121e1c1ef <unknown>
+#5 0x55f121e48e8e <unknown>
+#6 0x55f121e4b6ee <unknown>
+#7 0x55f121e4a061 <unknown>
+#8 0x55f121e3e259 <unknown>
+#9 0x55f121e3c419 <unknown>
+#10 0x55f121e4007b <unknown>
+#11 0x55f121e40123 <unknown>
+#12 0x55f121e89049 <unknown>
+#13 0x55f121e813e7 <unknown>
+#14 0x55f121ed68de <unknown>
+#15 0x55f121e7fb8b <unknown>
+#16 0x55f121e80971 <unknown>
+#17 0x55f1224c3667 <unknown>
+#18 0x55f1224c1e95 <unknown>
+#19 0x55f1224acf55 <unknown>
+#20 0x55f1224c2aea <unknown>
+#21 0x55f1224956c9 <unknown>
+#22 0x55f1224ea9a8 <unknown>
+#23 0x55f1224eab45 <unknown>
+#24 0x55f1224ff353 <unknown>
+#25 0x7f422409cb84 <unknown>
+#26 0x7f4224129ecc <unknown>
+======================== 1 failed, 13 passed in 24.65s =========================

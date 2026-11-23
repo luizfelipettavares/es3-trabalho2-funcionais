@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.1.1, pluggy-1.6.0 -- /usr/local/bin/python3
+metadata: {'Python': '3.13.18', 'Platform': 'Linux-6.18.44-fc-v553-x86_64-with-glibc2.39', 'Packages': {'pytest': '9.1.1', 'pluggy': '1.6.0'}, 'Plugins': {'platformdirs': '4.13.5', 'anyio': '4.15.1', 'metadata': '3.1.1', 'html': '4.2.0', 'locust': '2.47.0'}, 'CI': '1', 'JAVA_HOME': '/usr/lib/jvm/java-21-openjdk-amd64'}
+rootdir: /home/claude/entrega/trabalho2-funcionais/pacote-A/desafio
+plugins: platformdirs-4.13.5, anyio-4.15.1, metadata-3.1.1, html-4.2.0, locust-2.47.0
+collecting ... collected 14 items
+
+test_matricula.py::test_ct01_login_valido_abre_oferta PASSED             [  7%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[senha_errada] PASSED [ 14%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[matricula_inexistente] PASSED [ 21%]
+test_matricula.py::test_ct02_login_invalido_e_rejeitado[campos_vazios] PASSED [ 28%]
+test_matricula.py::test_ct03_oferta_sem_login_redireciona PASSED         [ 35%]
+test_matricula.py::test_ct04_ct05_quantidade_valida_matricula[limite_1] PASSED [ 42%]
+test_matricula.py::test_ct04_ct05_quantidade_valida_matricula[limite_5] PASSED [ 50%]
+test_matricula.py::test_ct06_ct07_quantidade_invalida_rejeitada[limite_0] PASSED [ 57%]
+test_matricula.py::test_ct06_ct07_quantidade_invalida_rejeitada[limite_6] PASSED [ 64%]
+test_matricula.py::test_ct08_choque_de_horario_rejeitado PASSED          [ 71%]
+test_matricula.py::test_ct09_disciplina_sem_vagas_rejeitada PASSED       [ 78%]
+test_matricula.py::test_ct10_segunda_matricula_do_aluno_rejeitada PASSED [ 85%]
+test_matricula.py::test_ct11_sucesso_gera_comprovante_e_desconta_vagas PASSED [ 92%]
+test_matricula.py::test_ct12_ultima_vaga_pode_ser_ocupada PASSED         [100%]
+
+- generated xml file: /home/claude/entrega/trabalho2-funcionais/resultados/pacote-A-desafio/execucao_r3.xml -
+- Generated html report: file:///home/claude/entrega/trabalho2-funcionais/resultados/pacote-A-desafio/execucao_r3.html -
+============================= 14 passed in 24.00s ==============================

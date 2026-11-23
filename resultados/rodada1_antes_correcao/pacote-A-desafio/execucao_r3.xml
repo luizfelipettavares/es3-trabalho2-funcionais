@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="14" time="24.649" timestamp="2026-11-17T16:22:30.007759-03:00" hostname="vm"><testcase classname="test_matricula" name="test_ct01_login_valido_abre_oferta" time="1.292" /><testcase classname="test_matricula" name="test_ct02_login_invalido_e_rejeitado[senha_errada]" time="1.321" /><testcase classname="test_matricula" name="test_ct02_login_invalido_e_rejeitado[matricula_inexistente]" time="1.273" /><testcase classname="test_matricula" name="test_ct02_login_invalido_e_rejeitado[campos_vazios]" time="1.255" /><testcase classname="test_matricula" name="test_ct03_oferta_sem_login_redireciona" time="0.971" /><testcase classname="test_matricula" name="test_ct04_ct05_quantidade_valida_matricula[limite_1]" time="1.928" /><testcase classname="test_matricula" name="test_ct04_ct05_quantidade_valida_matricula[limite_5]" time="1.813" /><testcase classname="test_matricula" name="test_ct06_ct07_quantidade_invalida_rejeitada[limite_0]" time="2.259" /><testcase classname="test_matricula" name="test_ct06_ct07_quantidade_invalida_rejeitada[limite_6]" time="2.982" /><testcase classname="test_matricula" name="test_ct08_choque_de_horario_rejeitado" time="2.141" /><testcase classname="test_matricula" name="test_ct09_disciplina_sem_vagas_rejeitada" time="1.565"><failure message="selenium.common.exceptions.WebDriverException: Message: unknown error: unhandled inspector error: {&quot;code&quot;:-32000,&quot;message&quot;:&quot;Node with given id does not belong to the document&quot;}&#10;  (Session info: chrome=153.0.8010.12)&#10;Stacktrace:&#10;#0 0x55f1225009fa &lt;unknown&gt;&#10;#1 0x55f121e365b9 &lt;unknown&gt;&#10;#2 0x55f121e1d355 &lt;unknown&gt;&#10;#3 0x55f121e1b80b &lt;unknown&gt;&#10;#4 0x55f121e1c1ef &lt;unknown&gt;&#10;#5 0x55f121e48e8e &lt;unknown&gt;&#10;#6 0x55f121e4b6ee &lt;unknown&gt;&#10;#7 0x55f121e4a061 &lt;unknown&gt;&#10;#8 0x55f121e3e259 &lt;unknown&gt;&#10;#9 0x55f121e3c419 &lt;unknown&gt;&#10;#10 0x55f121e4007b &lt;unknown&gt;&#10;#11 0x55f121e40123 &lt;unknown&gt;&#10;#12 0x55f121e89049 &lt;unknown&gt;&#10;#13 0x55f121e813e7 &lt;unknown&gt;&#10;#14 0x55f121ed68de &lt;unknown&gt;&#10;#15 0x55f121e7fb8b &lt;unknown&gt;&#10;#16 0x55f121e80971 &lt;unknown&gt;&#10;#17 0x55f1224c3667 &lt;unknown&gt;&#10;#18 0x55f1224c1e95 &lt;unknown&gt;&#10;#19 0x55f1224acf55 &lt;unknown&gt;&#10;#20 0x55f1224c2aea &lt;unknown&gt;&#10;#21 0x55f1224956c9 &lt;unknown&gt;&#10;#22 0x55f1224ea9a8 &lt;unknown&gt;&#10;#23 0x55f1224eab45 &lt;unknown&gt;&#10;#24 0x55f1224ff353 &lt;unknown&gt;&#10;#25 0x7f422409cb84 &lt;unknown&gt;&#10;#26 0x7f4224129ecc &lt;unknown&gt;">driver = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="a7d062cdd620210181db3ac5110ce9cc")&gt;
+base_url = 'http://localhost:5000'
+
+    def test_ct09_disciplina_sem_vagas_rejeitada(driver, base_url):
+        for n in range(2, 7):                                         # 5 outros alunos ocupam MOB
+            matricular_pela_api(base_url, f"2026{n:04d}", ["MOB"])
+&gt;       LoginMatriculaPage(driver, base_url).abrir().entrar(ALUNO, SENHA)
+
+test_matricula.py:121: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+pages/matricula_pages.py:38: in entrar
+    self.wait.until(EC.staleness_of(botao))
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/support/wait.py:112: in until
+    value = method(self._driver)
+            ^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/support/expected_conditions.py:546: in _predicate
+    element.is_enabled()
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py:238: in is_enabled
+    return self._execute(Command.IS_ELEMENT_ENABLED)["value"]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webelement.py:532: in _execute
+    return self._parent.execute(command, params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/webdriver.py:569: in execute
+    self.error_handler.check_response(response)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.remote.errorhandler.ErrorHandler object at 0x7ff346c2dd60&gt;
+response = {'status': 500, 'value': '{"value":{"error":"unknown error","message":"unknown error: unhandled inspector error: {\\"c...\\n#24 0x55f1224ff353 \\u003Cunknown&gt;\\n#25 0x7f422409cb84 \\u003Cunknown&gt;\\n#26 0x7f4224129ecc \\u003Cunknown&gt;\\n"}}'}
+
+    def check_response(self, response: dict[str, Any]) -&gt; None:
+        """Check that a JSON response from the WebDriver does not have an error.
+    
+        Args:
+            response: The JSON response from the WebDriver server as a dictionary
+                object.
+    
+        Raises:
+            WebDriverException: If the response contains an error message.
+        """
+        status = response.get("status", None)
+        if not status or status == ErrorCode.SUCCESS:
+            return
+        value = None
+        message = response.get("message", "")
+        screen: str = response.get("screen", "")
+        stacktrace = None
+        if isinstance(status, int):
+            value_json = response.get("value", None)
+            if value_json and isinstance(value_json, str):
+                try:
+                    value = json.loads(value_json)
+                    if isinstance(value, dict):
+                        if len(value) == 1:
+                            value = value["value"]
+                        status = value.get("error", None)
+                        if not status:
+                            status = value.get("status", ErrorCode.UNKNOWN_ERROR)
+                            message = value.get("value") or value.get("message")
+                            if not isinstance(message, str):
+                                value = message
+                                message = message.get("message") if isinstance(message, dict) else None
+                        else:
+                            message = value.get("message", None)
+                except ValueError:
+                    pass
+    
+        exception_class: type[WebDriverException]
+        e = ErrorCode()
+        error_codes = [item for item in dir(e) if not item.startswith("__")]
+        for error_code in error_codes:
+            error_info = getattr(ErrorCode, error_code)
+            if isinstance(error_info, list) and status in error_info:
+                exception_class = getattr(ExceptionMapping, error_code, WebDriverException)
+                break
+        else:
+            exception_class = WebDriverException
+    
+        if not value:
+            value = response.get("value")
+        if isinstance(value, str):
+            raise exception_class(value)
+        if isinstance(value, dict):
+            if message == "" and "message" in value:
+                message = value["message"]
+    
+            screen = None  # type: ignore[assignment]
+            if "screen" in value:
+                screen = value["screen"]
+    
+            stacktrace = None
+            st_value = value.get("stackTrace") or value.get("stacktrace")
+            if st_value:
+                if isinstance(st_value, str):
+                    stacktrace = st_value.split("\n")
+                else:
+                    stacktrace = []
+                    try:
+                        for frame in st_value:
+                            line = frame.get("lineNumber", "")
+                            file = frame.get("fileName", "&lt;anonymous&gt;")
+                            if line:
+                                file = f"{file}:{line}"
+                            meth = frame.get("methodName", "&lt;anonymous&gt;")
+                            if "className" in frame:
+                                meth = f"{frame['className']}.{meth}"
+                            msg = "    at %s (%s)"
+                            msg = msg % (meth, file)
+                            stacktrace.append(msg)
+                    except TypeError:
+                        pass
+        if exception_class == UnexpectedAlertPresentException:
+            alert_text = None
+            if isinstance(value, dict):
+                if "data" in value:
+                    alert_text = value["data"].get("text")
+                elif "alert" in value:
+                    alert_text = value["alert"].get("text")
+            raise exception_class(message, screen, stacktrace, alert_text)
+&gt;       raise exception_class(message, screen, stacktrace)
+E       selenium.common.exceptions.WebDriverException: Message: unknown error: unhandled inspector error: {"code":-32000,"message":"Node with given id does not belong to the document"}
+E         (Session info: chrome=153.0.8010.12)
+E       Stacktrace:
+E       #0 0x55f1225009fa &lt;unknown&gt;
+E       #1 0x55f121e365b9 &lt;unknown&gt;
+E       #2 0x55f121e1d355 &lt;unknown&gt;
+E       #3 0x55f121e1b80b &lt;unknown&gt;
+E       #4 0x55f121e1c1ef &lt;unknown&gt;
+E       #5 0x55f121e48e8e &lt;unknown&gt;
+E       #6 0x55f121e4b6ee &lt;unknown&gt;
+E       #7 0x55f121e4a061 &lt;unknown&gt;
+E       #8 0x55f121e3e259 &lt;unknown&gt;
+E       #9 0x55f121e3c419 &lt;unknown&gt;
+E       #10 0x55f121e4007b &lt;unknown&gt;
+E       #11 0x55f121e40123 &lt;unknown&gt;
+E       #12 0x55f121e89049 &lt;unknown&gt;
+E       #13 0x55f121e813e7 &lt;unknown&gt;
+E       #14 0x55f121ed68de &lt;unknown&gt;
+E       #15 0x55f121e7fb8b &lt;unknown&gt;
+E       #16 0x55f121e80971 &lt;unknown&gt;
+E       #17 0x55f1224c3667 &lt;unknown&gt;
+E       #18 0x55f1224c1e95 &lt;unknown&gt;
+E       #19 0x55f1224acf55 &lt;unknown&gt;
+E       #20 0x55f1224c2aea &lt;unknown&gt;
+E       #21 0x55f1224956c9 &lt;unknown&gt;
+E       #22 0x55f1224ea9a8 &lt;unknown&gt;
+E       #23 0x55f1224eab45 &lt;unknown&gt;
+E       #24 0x55f1224ff353 &lt;unknown&gt;
+E       #25 0x7f422409cb84 &lt;unknown&gt;
+E       #26 0x7f4224129ecc &lt;unknown&gt;
+
+/usr/local/lib/python3.13/site-packages/selenium/webdriver/remote/errorhandler.py:234: WebDriverException</failure></testcase><testcase classname="test_matricula" name="test_ct10_segunda_matricula_do_aluno_rejeitada" time="2.043" /><testcase classname="test_matricula" name="test_ct11_sucesso_gera_comprovante_e_desconta_vagas" time="1.838" /><testcase classname="test_matricula" name="test_ct12_ultima_vaga_pode_ser_ocupada" time="1.733" /></testsuite></testsuites>
