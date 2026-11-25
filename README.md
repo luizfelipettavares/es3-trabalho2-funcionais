@@ -9,6 +9,7 @@ Equipe: Luiz Felipe de Lima Silva Tavares da Costa e Samuel Alves de Sousa · Te
 | Exemplo B – Login | `127.0.0.1:8000/login` | `pacote-B/exemplo/` (sem alterações) | 2 |
 | **Desafio B – Inscrições** | `127.0.0.1:8000/inscricoes` | `pacote-B/desafio/` | 14 especificados e automatizados (19 execuções) |
 | **Projeto anterior** | *produtos-web* (Prog. para Internet II) `localhost:4173` | `projeto-anterior/` | 10 especificados e automatizados (15 execuções) |
+| Sistemas testados (cópia do kit do professor, sem alterações) | Pacote A (Flask) e Pacote B | `sistemas/` | |
 | Resultados das 3 execuções | JUnit XML, HTML, logs | `resultados/` | |
 | Relatório | | `relatorio.md` / `relatorio.pdf` | |
 | Slides da apresentação (Pacote A, com apêndices do B e do projeto) | | `slides.pdf` | |
@@ -36,17 +37,27 @@ conferida de novo para provar que nada foi gravado; `pytest.mark.parametrize` pa
 python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 ```
+Ativação no Windows: Git CMD/CMD `.venv\Scripts\activate.bat` · PowerShell `.venv\Scripts\Activate.ps1` · Git Bash `source .venv/Scripts/activate`.
+
+O sistema do Pacote A (`python app.py`) precisa do Flask, que não está no `requirements.txt` acima.
+Com o ambiente ativado, instale também:
+
+```bash
+python -m pip install -r sistemas/pacote-A/requirements.txt
+```
+O sistema do Pacote B usa só a biblioteca padrão do Python e não precisa de nada extra.
+
 Google Chrome instalado. O Selenium Manager baixa o driver na primeira execução (precisa de internet).
 
 ## 2. Subir os sistemas
 
 ```bash
-cd ESIII_Testes_Funcionais/02_Pacote_A_SaborExpress_Matricula/app && python app.py      # :5000
-cd ESIII_Testes_Funcionais/03_Pacote_B_Biblioteca_Minicursos && python app.py           # :8000
+cd sistemas/pacote-A && python app.py      # :5000
+cd sistemas/pacote-B && python app.py           # :8000
 
 # projeto anterior – usar a cópia com data-testid (patch em projeto-anterior/patch/)
 git clone https://github.com/luizfelipettavares/produtos-web && cd produtos-web
-git apply ../trabalho2-funcionais/projeto-anterior/patch/0001-data-testid.patch
+git apply <pasta-deste-repositorio>/projeto-anterior/patch/0001-data-testid.patch
 npm install && cd api && npm install && npm run build && PORT=3000 node dist/server.js &   # API :3000
 cd .. && echo "VITE_API_URL=http://localhost:3000" > .env && npx vite build && npx vite preview --port 4173   # tela :4173
 ```
