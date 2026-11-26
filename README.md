@@ -77,4 +77,15 @@ cd projeto-anterior  && python -m pytest test_produtos.py -v --html=relatorio.ht
 As 3 execuções registradas foram feitas com `bash ferramentas/rodar_3x.sh` (grava em `resultados/`) e a matriz
 foi preenchida com `python ferramentas/gerar_matrizes.py`.
 
+> **Windows: aponte os testes para `127.0.0.1`.** O padrão dos testes do Pacote A é `http://localhost:5000`;
+> num teste em Windows 11, com `localhost` cada requisição levou cerca de 2 s a mais e o CT09 demorou 27,6 s.
+> Com `127.0.0.1` o CT09 levou 6,9 s e a suíte do Desafio A passou inteira (14 passed). Exemplo no Git CMD/CMD:
+>
+> ```bat
+> cd pacote-A\desafio
+> set BASE_URL=http://127.0.0.1:5000
+> pytest -v -k ct09
+> ```
+> O `set` vale só para a janela onde foi digitado.
+
 Variáveis: `BASE_URL`, `HEADLESS=1`, `CI=1` (Linux como root/contêiner: `--no-sandbox`), `CHROMEDRIVER`, `CHROME_BINARY`.
