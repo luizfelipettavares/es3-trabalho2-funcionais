@@ -31,6 +31,96 @@ Boas práticas aplicadas: só `id`/`data-testid` (nenhum XPath); só esperas exp
 zera e prepara o próprio estado (suíte roda em qualquer ordem); nos casos de rejeição a tela é
 conferida de novo para provar que nada foi gravado; `pytest.mark.parametrize` para os dados.
 
+## Passo a passo no Windows (Git CMD)
+
+**Pré-requisitos**
+- Python 3 (testado com 3.13 e 3.15). No instalador, marque *Add python.exe to PATH*.
+- Git for Windows (instala o terminal **Git CMD**, usado em todos os passos).
+- Google Chrome instalado. O Selenium baixa o driver sozinho na primeira execução (precisa de internet).
+
+Use sempre `127.0.0.1` nos endereços, não `localhost`: no Windows, `localhost` deixou cada requisição cerca de 2 s mais lenta.
+
+**1. Baixar o trabalho** (uma vez)
+```bat
+cd C:\
+mkdir Projetos
+cd Projetos
+git clone https://github.com/luizfelipettavares/es3-trabalho2-funcionais
+```
+
+**2. Criar o ambiente e instalar as dependências** (uma vez)
+```bat
+cd C:\Projetos\es3-trabalho2-funcionais
+python -m venv .venv
+.venv\Scripts\activate.bat
+python -m pip install -r requirements.txt
+python -m pip install -r sistemas\pacote-A\requirements.txt
+```
+Certo quando a linha começa com `(.venv)` e o `pip` termina sem erro.
+Em toda janela nova, entre na pasta e rode `.venv\Scripts\activate.bat` de novo.
+
+**3. Subir os sistemas** (uma janela do Git CMD para cada; não feche)
+
+Janela 1 – Pacote A (porta 5000):
+```bat
+cd C:\Projetos\es3-trabalho2-funcionais
+.venv\Scripts\activate.bat
+cd sistemas\pacote-A
+python app.py
+```
+Certo quando aparece `Running on http://127.0.0.1:5000`.
+
+Janela 2 – Pacote B (porta 8000):
+```bat
+cd C:\Projetos\es3-trabalho2-funcionais
+.venv\Scripts\activate.bat
+cd sistemas\pacote-B
+python app.py
+```
+Certo quando aparece `Aplicação local em http://127.0.0.1:8000`.
+
+**4. Rodar os testes** (janela 3; o Chrome abre e fecha sozinho)
+
+Pacote A – portal de matrícula (precisa da janela 1):
+```bat
+cd C:\Projetos\es3-trabalho2-funcionais
+.venv\Scripts\activate.bat
+cd pacote-A\desafio
+set BASE_URL=http://127.0.0.1:5000
+pytest -v -k ct09
+pytest -v
+```
+- `pytest -v -k ct09` roda só um caso (alguns segundos). Esperado: `1 passed`.
+- `pytest -v` roda a suíte toda (cerca de 1 min com o Chrome visível). Esperado: `14 passed`.
+- O `set` vale só para a janela onde foi digitado.
+
+Pacote B – inscrições (precisa da janela 2):
+```bat
+cd C:\Projetos\es3-trabalho2-funcionais\pacote-B\desafio
+python -m pytest test_inscricoes.py -v
+```
+Esperado: `19 passed`.
+
+Para não abrir o navegador, rode antes `set HEADLESS=1`. Rode uma suíte por vez, nunca duas ao mesmo tempo.
+Para o projeto anterior (produtos-web), ver as seções 2 e 3 abaixo.
+
+**5. Encerrar**: `Ctrl+C` nas janelas 1 e 2.
+
+**Se algo der errado**
+
+| Aparece | Fazer |
+|---|---|
+| `'python' não é reconhecido` | Reinstale o Python marcando *Add python.exe to PATH* e abra um Git CMD novo. |
+| `'pytest' não é reconhecido` | Ambiente não ativado: `.venv\Scripts\activate.bat` na pasta do trabalho. |
+| `ModuleNotFoundError: No module named 'flask'` | Faltou o passo 2: `python -m pip install -r sistemas\pacote-A\requirements.txt`. |
+| Todos os testes falham logo no início | O sistema não está no ar ou faltou o `set BASE_URL=...` nesta janela. |
+| Erro ao abrir o Chrome / baixar o driver | Confira se o Chrome está instalado e se há internet na primeira execução. |
+| Testes muito lentos (vários segundos cada) | Ficou `localhost`: use `set BASE_URL=http://127.0.0.1:5000`. |
+
+## Passo a passo completo (Linux/macOS e todas as execuções)
+
+As seções abaixo trazem todos os comandos usados para gerar os resultados registrados.
+
 ## 1. Preparar o ambiente
 
 ```bash
